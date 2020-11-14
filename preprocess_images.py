@@ -26,9 +26,10 @@ class ImagesPreprocess:
         return self
 
     def preprocess_images(self):
-        path_pattern = f"{self.__parent_dir}/[s]z*/**/*.jpg"
+        path_pattern = f"{self.__parent_dir}/[ms]z*/**/*.jpg"
         flag = False
         for i, img_path in enumerate(glob.glob(path_pattern, recursive=True)):
+            print(f"Iteration: {i}")
             img_name = os.path.basename(img_path)
             img = io.imread(img_path, pilmode="RGB")
             img = img_as_ubyte(resize(img, self.__size, anti_aliasing=True))
