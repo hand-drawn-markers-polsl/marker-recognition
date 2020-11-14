@@ -133,3 +133,9 @@ dmypy.json
 
 # Project files
 **/.idea/
+
+# Google Drive settings
+client_secrets.json
+credentials.json
+settings.yaml
+
