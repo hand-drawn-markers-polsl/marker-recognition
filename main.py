@@ -9,7 +9,13 @@ if __name__ == '__main__':
         'name',
         type=str,
         help='Name of the experiment run, will be used to save models and\
-              logs.'
+              logs'
+    )
+    parser.add_argument(
+        '-l',
+        '--log',
+        action='store_true',
+        help='Enable tensorboard and model checkpoint logging to the log dir'
     )
 
     args = parser.parse_args()
@@ -22,8 +28,8 @@ if __name__ == '__main__':
         'epochs': 1,
         'validation_split': 0.2,
         'cross_validation': False,
-        'tensorboard': True,
-        'modelcheckpoint': True,
+        'tensorboard': args.log,
+        'modelcheckpoint': args.log,
         'earlystopping': True,
     }
 
