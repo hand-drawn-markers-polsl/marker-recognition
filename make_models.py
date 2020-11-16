@@ -1,8 +1,8 @@
 import glob
 from datetime import datetime
 
-from keras import layers
-from keras import models
+from tensorflow.keras import layers
+from tensorflow.keras import models
 
 
 def save_model(model, name, timestamp=True):
