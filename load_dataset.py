@@ -7,7 +7,7 @@ from tensorflow.keras.preprocessing import image_dataset_from_directory
 def load_all_dataset(directory: str,
                      batch_size=16,
                      img_size=(640, 640),
-                     seed=None) -> tf.data.Dataset:
+                     seed=42) -> tf.data.Dataset:
     return image_dataset_from_directory(
         directory=directory,
         batch_size=batch_size,
@@ -19,7 +19,7 @@ def load_all_dataset(directory: str,
 def load_partial_dataset(directory: str,
                          batch_size=16,
                          img_size=(640, 640),
-                         seed=666,
+                         seed=42,
                          validation_split=0.2) \
         -> Tuple[tf.data.Dataset, tf.data.Dataset]:
     load_dataset = partial(
