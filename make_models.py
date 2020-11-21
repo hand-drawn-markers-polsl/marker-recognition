@@ -5,17 +5,17 @@ from tensorflow.keras import layers
 from tensorflow.keras import models
 
 
-def save_model(model, name, timestamp=True):
+def save_model(model: models.Model, name: str, timestamp=True):
     timestamp = datetime.now().strftime("%y-%m-%d-%H:%M:%S")
     model.save('log/models/model_' + timestamp + ' ' + name)
 
 
-def load_model(name):
+def load_model(name: str) -> models.Model:
     path = glob.glob('log/models/model*' + name)
     return models.load_model(path[0])
 
 
-def make_simple_cnn(input_shape=(640, 640, 3)):
+def make_simple_cnn(input_shape=(640, 640, 3)) -> models.Model:
     model = models.Sequential()
 
     model.add(layers.Conv2D(6, (3, 3), activation='relu',

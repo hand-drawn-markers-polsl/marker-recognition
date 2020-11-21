@@ -1,13 +1,12 @@
+from typing import List
 from datetime import datetime
-
 from tensorflow.keras import callbacks, optimizers
-
+from tensorflow.keras.models import Model
 from load_dataset import load_partial_dataset
 
 
-def make_callbacks(params):
+def make_callbacks(params: dict) -> List[callbacks.Callback]:
     callbacks_list = []
-
     timestamp = datetime.now().strftime("%y-%m-%d-%H:%M:%S")
 
     if params['tensorboard']:
@@ -33,7 +32,7 @@ def make_callbacks(params):
     return callbacks_list
 
 
-def prepare_model(model, params):
+def prepare_model(model: Model, params: dict):
     model.compile(
         optimizer=optimizers.Adam(1e-3),
         loss="binary_crossentropy",
@@ -41,7 +40,7 @@ def prepare_model(model, params):
     )
 
 
-def fit_simple(model, params):
+def fit_simple(model: Model, params: dict):
     train_ds, val_ds = load_partial_dataset(
         directory=params['img_directory'],
         batch_size=params['batch_size'],
@@ -60,11 +59,11 @@ def fit_simple(model, params):
     )
 
 
-def fit_cross_val(model, params):
+def fit_cross_val(model: Model, params: dict):
     pass
 
 
-def train(model, params):
+def train(model: Model, params: dict):
     if params['cross_validation']:
         fit_cross_val(model, params)
     else:
