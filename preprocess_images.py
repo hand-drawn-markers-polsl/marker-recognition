@@ -42,9 +42,11 @@ class ImagesPreprocess:
 
 def main():
     images_path = "../images"
-    ImagesPreprocess(640, images_path)\
-        .create_model_dirs()\
-        .preprocess_images()
+    img_prep = (
+        ImagesPreprocess(640, images_path)
+            .create_model_dirs()
+            .preprocess_images()
+    )
 
 
 if __name__ == "__main__":

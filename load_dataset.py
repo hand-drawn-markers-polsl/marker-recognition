@@ -4,6 +4,11 @@ import tensorflow as tf
 from tensorflow.keras.preprocessing import image_dataset_from_directory
 
 
+def _img_as_float(image: tf.float32,
+                  labels: tf.int32):
+    return tf.dtypes.cast(image, tf.float32) / 255, labels
+
+
 def load_all_dataset(directory: str,
                      batch_size=16,
                      img_size=(640, 640),
@@ -13,7 +18,7 @@ def load_all_dataset(directory: str,
         batch_size=batch_size,
         image_size=img_size,
         seed=seed
-    )
+    ).map(_img_as_float)
 
 
 def load_partial_dataset(directory: str,
@@ -30,7 +35,9 @@ def load_partial_dataset(directory: str,
         image_size=img_size,
         batch_size=batch_size
     )
-    return load_dataset(subset="training"), load_dataset(subset="validation")
+    train_ds = load_dataset(subset="training").map(_img_as_float)
+    val_ds = load_dataset(subset="validation").map(_img_as_float)
+    return train_ds, val_ds
 
 
 def main():
