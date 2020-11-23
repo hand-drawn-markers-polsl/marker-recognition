@@ -1,7 +1,4 @@
-# This workflow will install Python dependencies, run tests and lint with a single version of Python
-# For more information see: https://help.github.com/actions/language-and-framework-guides/using-python-with-github-actions
-
-name: Python application
+name: build
 
 on:
   push:
@@ -16,19 +13,18 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    - name: Python setup
-      uses: actions/setup-python@v2
+    - name: Set up Python 3.8
+      uses: actions/setup-python@v2a
       with:
         python-version: 3.8
-    - name: Dependencies setup
+    - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install pyflakes pycodestyle pydocstyle pytest
-        [ -f requirements.txt ] && pip install -r requirements.txt
-    - name: Code correctness
+        pip install flake8 pytest
+        [ -f requirements.txt ] && pip install -r requirements.txt; fi
+    - name: Lint with flake8
       run: |
-        pyflakes .
-    - name: Code style
-      run: |
-        pycodestyle .
-        pydocstyle .
+        # Stop the build if there are Python syntax errors or undefined names
+        flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+        # Exit-zero treats all errors as warnings
+        flake8 . --count --exit-zero --max-complexity=10 --max-line-length=80 --statistics
