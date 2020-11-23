@@ -24,7 +24,7 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install pyflakes pycodestyle pydocstyle pytest
-        if [ -f requirements.txt ] && pip install -r requirements.txt
+        [ -f requirements.txt ] && pip install -r requirements.txt
     - name: Code correctness
       run: |
         pyflakes .
