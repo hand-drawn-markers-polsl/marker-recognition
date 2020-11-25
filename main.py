@@ -26,8 +26,8 @@ if __name__ == '__main__':
         'name': args.name,
         'img_directory': '../images/train',
         'img_size': (640, 640),
-        'batch_size': 16,
-        'epochs': 10,
+        'batch_size': 8,
+        'epochs': 15,
         'validation_split': 0.2,
         'cross_validation': False,
         'tensorboard': args.log,
@@ -37,5 +37,5 @@ if __name__ == '__main__':
 
     model = make_simple_cnn()
     img_path = "../images/train/true/IMG_6605.jpg"
-    plot_heatmaps(img_path, params['img_size'], model, "dupa.jpg")
     train(model, params)
+    plot_heatmaps(img_path, params['img_size'], model, "dupa.jpg")

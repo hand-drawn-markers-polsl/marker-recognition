@@ -23,24 +23,28 @@ def make_simple_cnn(input_shape=(640, 640, 3)) -> models.Model:
     model.add(layers.Conv2D(32, (3, 3), kernel_regularizer=l2_regularizer,
                             activation='relu', input_shape=input_shape))
     model.add(layers.MaxPool2D())
+    model.add(layers.Dropout(0.2))
 
-    model.add(layers.Flatten())
     model.add(layers.Conv2D(64, (3, 3), kernel_regularizer=l2_regularizer,
                             activation='relu'))
     model.add(layers.MaxPool2D((2, 2)))
+    model.add(layers.Dropout(0.2))
 
     model.add(layers.Conv2D(128, (3, 3), kernel_regularizer=l2_regularizer,
                             activation='relu'))
     model.add(layers.MaxPool2D((2, 2)))
+    model.add(layers.Dropout(0.2))
 
     model.add(layers.Conv2D(128, (3, 3), kernel_regularizer=l2_regularizer,
                             activation='relu'))
     model.add(layers.MaxPool2D((2, 2)))
+    model.add(layers.Dropout(0.2))
 
     model.add(layers.Flatten())
     model.add(layers.Dense(512, kernel_regularizer=l2_regularizer,
                            activation='relu'))
 
+    model.add(layers.Dropout(0.5))
     model.add(layers.Dense(1, activation='sigmoid'))
 
     return model

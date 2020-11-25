@@ -34,7 +34,7 @@ def make_callbacks(params: dict) -> List[callbacks.Callback]:
 
 def prepare_model(model: Model, params: dict):
     model.compile(
-        optimizer=optimizers.Adam(1e-3),
+        optimizer=optimizers.RMSprop(2e-5),
         loss="binary_crossentropy",
         metrics=["accuracy"],
     )
