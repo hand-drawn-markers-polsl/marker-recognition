@@ -4,7 +4,6 @@ from tensorflow import keras
 from tensorflow.keras.preprocessing.image import load_img, img_to_array
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
-from IPython.display import Image, display
 
 
 def get_img_array(img_path, size):
@@ -13,23 +12,36 @@ def get_img_array(img_path, size):
     return np.expand_dims(array, axis=0)
 
 
+def get_last_layer_names(model):
+    outputs = [layer.name for layer in model.layers]
+    last_conv_layer_name = ""
+    classifier_layer_names = []
+    for output in reversed(outputs):
+        if "conv2d" in output:
+            last_conv_layer_name = output
+            break
+        classifier_layer_names.append(output)
+    classifier_layer_names.reverse()
+    return last_conv_layer_name, classifier_layer_names
+
+
 def make_gradcam_heatmap(img_array, model, last_conv_layer_name,
                          classifier_layer_names):
-    # First, we create a model that maps the input image to the activations
-    # of the last conv layer
+    # First, we create a model that maps the input image
+    # to the activations of the last conv layer
     last_conv_layer = model.get_layer(last_conv_layer_name)
     last_conv_layer_model = keras.Model(model.inputs, last_conv_layer.output)
 
-    # Second, we create a model that maps the activations of the last conv
-    # layer to the final class predictions
+    # Second, we create a model that maps the activations
+    # of the last conv layer to the final class predictions
     classifier_input = keras.Input(shape=last_conv_layer.output.shape[1:])
     x = classifier_input
     for layer_name in classifier_layer_names:
         x = model.get_layer(layer_name)(x)
     classifier_model = keras.Model(classifier_input, x)
 
-    # Then, we compute the gradient of the top predicted class for our input image
-    # with respect to the activations of the last conv layer
+    # Then, we compute the gradient of the top predicted class for our input
+    # image with respect to the activations of the last conv layer
     with tf.GradientTape() as tape:
         # Compute activations of the last conv layer and make the tape watch it
         last_conv_layer_output = last_conv_layer_model(img_array)
@@ -58,41 +70,14 @@ def make_gradcam_heatmap(img_array, model, last_conv_layer_name,
     # is our heatmap of class activation
     heatmap = np.mean(last_conv_layer_output, axis=-1)
 
-    # For visualization purpose, we will also normalize the heatmap between 0 & 1
+    # For visualization purpose, we will normalize the heatmap between 0 & 1
     heatmap = np.maximum(heatmap, 0) / np.max(heatmap)
     return heatmap
 
 
-def main():
-    model_builder = keras.applications.xception.Xception
-    img_size = (299, 299)
-    preprocess_input = keras.applications.xception.preprocess_input
-    decode_predictions = keras.applications.xception.decode_predictions
-
-    last_conv_layer_name = "block14_sepconv2_act"
-    classifier_layer_names = [
-        "avg_pool",
-        "predictions",
-    ]
-
-    # The local path to our target image
-    img_path = keras.utils.get_file(
-        "african_elephant.jpg", " https://i.imgur.com/Bvro0YD.png"
-    )
-
-    display((Image(img_path),))
-
-    # Prepare image
-    img_array = preprocess_input(get_img_array(img_path, size=img_size))
-
-    # Make model
-    model = model_builder(weights="imagenet")
-
-    # Print what the top predicted class is
-    preds = model.predict(img_array)
-    print("Predicted:", decode_predictions(preds, top=1)[0])
-
-    # Generate class activation heatmap
+def plot_heatmaps(img_path, img_size, model, save_path):
+    img_array = get_img_array(img_path, size=img_size)
+    last_conv_layer_name, classifier_layer_names = get_last_layer_names(model)
     heatmap = make_gradcam_heatmap(
         img_array, model, last_conv_layer_name, classifier_layer_names
     )
@@ -123,14 +108,4 @@ def main():
     # Superimpose the heatmap on original image
     superimposed_img = jet_heatmap * 0.4 + img
     superimposed_img = keras.preprocessing.image.array_to_img(superimposed_img)
-
-    # Save the superimposed image
-    save_path = "elephant_cam.jpg"
     superimposed_img.save(save_path)
-
-    # Display Grad CAM
-    display((Image(save_path),))
-
-
-if __name__ == "__main__":
-    main()
