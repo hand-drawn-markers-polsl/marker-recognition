@@ -138,3 +138,9 @@ dmypy.json
 client_secrets.json
 credentials.json
 settings.yaml
+
+# Logs
+log/
+
+# Plots
+**/*.jpg

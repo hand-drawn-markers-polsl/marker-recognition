@@ -7,7 +7,7 @@ from load_dataset import load_partial_dataset
 
 def make_callbacks(params: dict) -> List[callbacks.Callback]:
     callbacks_list = []
-    timestamp = datetime.now().strftime("%y-%m-%d-%H:%M:%S")
+    timestamp = datetime.now().strftime("%y-%m-%d_%H_%M_%S")
 
     if params['tensorboard']:
         callbacks_list.append(callbacks.TensorBoard(
