@@ -2,7 +2,7 @@ import argparse
 import glob
 import os
 
-from make_models import make_simple_cnn, save_model
+from make_models import make_simple_cnn
 from train import train
 
 from visualize import plot_heatmaps
@@ -39,7 +39,6 @@ if __name__ == '__main__':
 
     model = make_simple_cnn()
     train(model, params)
-    save_model(model, "first_working_model")
 
     path_pattern = f"{params['img_directory']}/**/*.jpg"
     base_dir = "heatmaps"
