@@ -26,7 +26,7 @@ class ImagesPreprocess:
         return self
 
     def preprocess_images(self):
-        path_pattern = f"{self.__parent_dir}/[ms]z*/**/*.jpg"
+        path_pattern = f"{self.__parent_dir}/[ms]z*/**/*.jpeg"
         flag = False
         for i, img_path in enumerate(glob.glob(path_pattern, recursive=True)):
             print(f"Iteration: {i}")
