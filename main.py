@@ -37,7 +37,7 @@ if __name__ == '__main__':
         'earlystopping': True,
     }
 
-    model = make_simple_cnn()
+    model = make_simple_cnn(args.name)
     train(model, params)
 
     path_pattern = f"{params['img_directory']}/**/*.jpg"
