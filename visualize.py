@@ -1,10 +1,15 @@
 import numpy as np
 import tensorflow as tf
 from tensorflow import keras
+
+from keras import models
+
 from tensorflow.keras.preprocessing.image import load_img, img_to_array
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
 from math import ceil
+
+from make_models import load_model
 
 
 class FilterLayerVisualiser():
@@ -104,11 +109,62 @@ class FilterLayerVisualiser():
         img = np.clip(img, 0, 255).astype("uint8")
         return img
 
+
+def IntermediateActivationsVisualizer(model, img):
+
+    layer_outputs = [layer.output for layer in model.layers[:8]]
+    activation_model = models.Model(inputs=model.input, outputs=layer_outputs)
+    activations = activation_model.predict(img_tensor)
+    layer_names = []
+    for layer in model.layers[:8]:
+        layer_names.append(layer.name)
+
+    images_per_row = 16
+
+    print(layer_names)
+    for layer_name, layer_activation in zip(layer_names, activations):
+        n_features = layer_activation.shape[-1]
+
+        size = layer_activation.shape[1]
+        n_cols = n_features // images_per_row
+        display_grid = np.zeros((size * n_cols, images_per_row * size))
+
+        for col in range(n_cols):
+            for row in range(images_per_row):
+                channel_image = layer_activation[0,
+                                                 :, :,
+                                                 col * images_per_row + row]
+
+                channel_image -= channel_image.mean()
+                channel_image /= channel_image.std()
+                channel_image *= 64
+                channel_image += 128
+                channel_image = np.clip(channel_image, 0, 255).astype('uint8')
+                display_grid[col * size : (col + 1) * size,
+                             row * size : (row + 1) * size] = channel_image
+
+        scale = 1. / size
+        print("TST")
+        plt.figure(figsize=(scale * display_grid.shape[1],
+                            scale * display_grid.shape[0]))
+        plt.title(layer_name)
+        plt.grid(False)
+        plt.imshow(display_grid, aspect='auto', cmap='viridis')
+    plt.show()
+
+###
+img = keras.preprocessing.image.load_img('../images/train/true/IMG_20201101_133135.jpg')
+img = keras.preprocessing.image.img_to_array(img)
+img_tensor = np.expand_dims(img, axis=0)
+img_tensor /= 255.
+model = load_model('dupa')
+IntermediateActivationsVisualizer(model, img)
+
 def get_img_array(img_path, size):
     img = load_img(img_path, target_size=size)
     array = img_to_array(img)
     return np.expand_dims(array, axis=0)
-
+###
 
 def get_last_layer_names(model):
     outputs = [layer.name for layer in model.layers]
