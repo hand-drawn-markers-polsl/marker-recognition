@@ -12,7 +12,7 @@ import matplotlib.cm as cm
 from make_models import load_model
 
 
-class FilterLayerVisualiser():
+class FilterLayerVisualizer():
     def __init__(self, model, layer_name, output_dir):
         self._img_width, self._img_height = model.input_shape[1:3]
         self._layer_name = layer_name
@@ -23,7 +23,7 @@ class FilterLayerVisualiser():
         )
         self._output_dir = output_dir
 
-    def visualise(self, filter_num=8):
+    def visualize(self, filter_num=8):
         all_imgs = []
         print('Computing max activations for filter:')
         for filter_index in range(filter_num):
@@ -138,16 +138,16 @@ class IntermediateActivationsVisualizer():
             inputs=model.input, outputs=self._layer_outputs)
         self._output_dir = output_dir
 
-    def visualise(self, img, cols=16):
+    def visualize(self, img, cols=16):
         activations = self._activation_model.predict(img)
 
         print('Computing intermediate activations for layer:')
         for name, activation in zip(self._layer_names, activations):
             print(f'{name}', end=', ', flush=True)
-            self.visualise_layer(name, activation, cols)
+            self.visualize_layer(name, activation, cols)
         print('\nFinished computing intermediate activations.\n')
 
-    def visualise_layer(self, layer_name, layer_activation, cols):
+    def visualize_layer(self, layer_name, layer_activation, cols):
         n_features = layer_activation.shape[-1]
 
         size = layer_activation.shape[1]
@@ -316,8 +316,8 @@ def main():
     print()
 
     plot_heatmaps(path, (640, 640), model, "log/images/")
-    IntermediateActivationsVisualizer(model, 'log/images/').visualise(img)
-    FilterLayerVisualiser(model, 'conv2d_3', 'log/images/').visualise()
+    IntermediateActivationsVisualizer(model, 'log/images/').visualize(img)
+    FilterLayerVisualizer(model, 'conv2d_3', 'log/images/').visualize()
 
 
 if __name__ == '__main__':
