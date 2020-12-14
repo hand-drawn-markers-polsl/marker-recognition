@@ -1,0 +1,8 @@
+stages:
+  prepare:
+    cmd: ./convert_imgs.sh && python3 prepare.py
+    deps:
+      - data/raw
+    outs:
+      - data/train
+      - data/test

@@ -1,0 +1,16 @@
+prepare:
+  cmd: ./convert_imgs.sh && python3 prepare.py
+  deps:
+  - path: data/raw
+    md5: 59e39f5e68f506f62dd2f636e52567e2.dir
+    size: 7058178233
+    nfiles: 2934
+  outs:
+  - path: data/test
+    md5: 8fac2ca3f308120b4a120dc7d5f14681.dir
+    size: 2530214
+    nfiles: 50
+  - path: data/train
+    md5: b97182df8b37a118aacad09f1e8bb196.dir
+    size: 137726250
+    nfiles: 2880
