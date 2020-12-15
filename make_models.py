@@ -16,7 +16,7 @@ def load_model(name: str) -> models.Model:
     return models.load_model(path[0])
 
 
-def make_simple_cnn(name, input_shape=(640, 640, 3)) -> models.Model:
+def make_regularized_cnn(name, input_shape=(640, 640, 3)) -> models.Model:
     model = models.Sequential(name=name)
     l2_regularizer = regularizers.l2(0.001)
 

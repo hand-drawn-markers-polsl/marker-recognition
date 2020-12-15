@@ -14,3 +14,19 @@ prepare:
     md5: b97182df8b37a118aacad09f1e8bb196.dir
     size: 137726250
     nfiles: 2880
+train:
+  cmd: python3 train.py
+  deps:
+  - path: data/test
+    md5: 8fac2ca3f308120b4a120dc7d5f14681.dir
+    size: 2530214
+    nfiles: 50
+  - path: data/train
+    md5: b97182df8b37a118aacad09f1e8bb196.dir
+    size: 137726250
+    nfiles: 2880
+  outs:
+  - path: log/models
+    md5: 90d416f72fd4b13acaa605de8c779f17.dir
+    size: 759254428
+    nfiles: 3

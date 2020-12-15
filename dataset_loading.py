@@ -22,6 +22,7 @@ def load_train_dataset(directory: Path,
 
     :param directory: Path to training image set root.
     :parm batch_size: Size of batch generated during iteration.
+    :param img_size: Image width and height (assumes square image ratio).
     :param validation_split: Split between train and validation data.
     :param seed: Seed for randomly returning data on generation.
     :param augmentation: Dict of Keras augmentation params, directly

@@ -6,3 +6,11 @@ stages:
     outs:
       - data/train
       - data/test
+
+  train:
+    cmd: python3 train.py
+    deps:
+      - data/train
+      - data/test
+    outs:
+      - log/models

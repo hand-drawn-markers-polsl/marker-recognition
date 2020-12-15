@@ -1,0 +1,21 @@
+name: simple_regularized_cnn
+
+load:
+  img_directory: data/train
+  img_size: 640
+  batch_size: 32
+  validation_split: 0.8
+  augmentations:
+    # This is a dummy augmentation, does nothing
+    zoom_range: 0.0
+
+train:
+  lr: 0.00002
+  epochs: 1
+
+  callbacks:
+    tensorboard: true
+    modelcheckpoint: true
+    earlystopping: true
+    stopping_delta: 0.001
+    stopping_patience: 5
