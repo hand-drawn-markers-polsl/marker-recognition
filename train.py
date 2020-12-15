@@ -2,7 +2,7 @@
 
 import argparse
 from datetime import datetime
-from typing import List
+from typing import Dict, List
 import yaml
 
 from tensorflow.data import Dataset
@@ -93,7 +93,7 @@ def make_callbacks(name: str, cb_params: dict) -> List[callbacks.Callback]:
     return callbacks_list
 
 
-def make_params():
+def make_params() -> dict:
     """Make training parameters dict."""
     parser = argparse.ArgumentParser()
     parser.add_argument(
