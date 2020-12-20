@@ -21,5 +21,3 @@ stages:
       - data/models
     metrics:
       - data/metrics.json
-    plots:
-      - data/plots.json
