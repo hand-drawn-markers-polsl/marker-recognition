@@ -30,3 +30,17 @@ train:
     md5: 90d416f72fd4b13acaa605de8c779f17.dir
     size: 759254428
     nfiles: 3
+test:
+  cmd: python3 test.py
+  deps:
+  - path: log/models
+    md5: 77600068af5b4674170192de40cdde97.dir
+    size: 2277760116
+    nfiles: 9
+  outs:
+  - path: data/metrics.json
+    md5: 8a05224cbdc33c58f00dd452b6d96781
+    size: 191
+  - path: data/plots.json
+    md5: dc8779105883fb26a4e2700cdd49448b
+    size: 7104

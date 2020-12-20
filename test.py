@@ -17,7 +17,7 @@ from dataset_loading import load_test_dataset
 from make_models import load_model
 
 
-def evaluate(test_ds: Dataset, model: Model, test_params: dict):
+def evaluate(model: Model, test_ds: Dataset, test_params: dict):
     """Evaluate model on given data.
 
     :param test_ds: Test dataset.
@@ -25,10 +25,37 @@ def evaluate(test_ds: Dataset, model: Model, test_params: dict):
     :param test_params: Dict with test params. Must include keys:
         threshold: Binary classification threshold of type float.
     """
-    threshold = test_params['threshold']
+    y_true, y_pred, y_pred_classes = make_eval_preds(
+        model,
+        test_ds,
+        test_params['threshold']
+    )
 
-    eval_results = model.evaluate(test_ds)
+    m = make_metrics(y_true, y_pred, y_pred_classes)
+    m['eval_results'] = model.evaluate(test_ds)
 
+    print('\nModel metrics (Keras default threshold) evaluation:'
+          '\nTest loss, test acc:', m['eval_results'])
+    print('\nAUC score:', m['roc']['auc_score'])
+    print('\nClassfication report:\n', m['class_report'])
+    print('\nConfusion matrix:\n', m['conf_matrix'])
+
+    plot_activation_hist(y_pred)
+    plot_precision_recall(**m['prec_rec_curve'])
+    plot_roc(**m['roc'])
+
+    save_metrics(m)
+
+
+def make_eval_preds(model: Model, test_ds: Dataset, threshold=0.5) -> list:
+    """Make evaluation predictions for given model and data.
+
+    :param model: Binary classifier model to test.
+    :param test_ds: Test dataset.
+    :param threshold: Binary classification threshold used for class
+        predictions.
+    :return: List containing labels: [y_true, y_pred, y_pred_classes].
+    """
     y_pred = model.predict(test_ds)
     y_true = datagen_to_labels_array(test_ds)
 
@@ -36,61 +63,71 @@ def evaluate(test_ds: Dataset, model: Model, test_params: dict):
     y_pred_classes = y_pred > threshold
     y_true = y_true.ravel()
 
-    class_report = classification_report(y_true, y_pred_classes)
-    conf_matrix = confusion_matrix(y_true, y_pred_classes)
-    single_precision_score = precision_score(y_true, y_pred_classes)
-    single_recall_score = recall_score(y_true, y_pred_classes)
-    single_f1_score = f1_score(y_true, y_pred_classes)
+    return y_true, y_pred, y_pred_classes
 
-    pr, re, pr_thr = precision_recall_curve(y_true, y_pred)
+
+def make_metrics(y_true: np.ndarray,
+                 y_pred: np.ndarray,
+                 y_pred_classes: np.ndarray) -> dict:
+    """Make evaluation metrics, based on predictions.
+
+    :param y_true: Ground truth labels.
+    :param y_pred: Classification predictions (probabilities with values
+        from 0 to 1).
+    :param y_pred_classes: Classification class predictions (predicted
+        labels - either 0 or 1).
+    :return: Dict with metrics. There are many of them, it is best to examine
+        their keys in the body of this function.
+    """
+    metrics = {}
+    m = metrics
+    m['class_report'] = classification_report(y_true, y_pred_classes)
+    m['conf_matrix'] = confusion_matrix(y_true, y_pred_classes)
+    m['precision'] = precision_score(y_true, y_pred_classes)
+    m['recall'] = recall_score(y_true, y_pred_classes)
+    m['f1_score'] = f1_score(y_true, y_pred_classes)
+
+    m['prec_rec_curve'] = {}
+    prec, rec, pr_thr = precision_recall_curve(y_true, y_pred)
+    m['prec_rec_curve']['prec'] = prec
+    m['prec_rec_curve']['rec'] = rec
+    m['prec_rec_curve']['thr'] = pr_thr
+
+    m['roc'] = {}
     fpr, tpr, roc_thr = roc_curve(y_true, y_pred)
-    auc_score = auc(fpr, tpr)
+    m['roc']['fpr'] = fpr
+    m['roc']['tpr'] = tpr
+    m['roc']['thr'] = roc_thr
+    m['roc']['auc_score'] = auc(fpr, tpr)
 
-    print('\nModel metrics evaluation:\nTest loss, test acc:', eval_results)
-    print('\nAUC score:', auc_score)
-    print('\nClassfication report:\n', class_report)
-    print('\nConfusion matrix:\n', conf_matrix)
+    return metrics
 
-    with open('log/scores.json', 'w') as fd:
-        json.dump([
-            {'loss': eval_results[0]},
-            {'accuracy': eval_results[1]},
-            {'TP': str(conf_matrix[0][0])},
-            {'FP': str(conf_matrix[0][1])},
-            {'FN': str(conf_matrix[1][0])},
-            {'TN': str(conf_matrix[1][1])},
-            {'precision': str(single_precision_score)},
-            {'recall': str(single_recall_score)},
-            {'f1_score': str(single_f1_score)},
-            {'auc': str(auc_score)}],
-            fd
+
+def save_metrics(metrics: dict, path=Path('data/metrics.json')):
+    """Save classification metrics in json file.
+
+    To see what keys should be included in 'metrics' dict see the body
+    of this function.
+    """
+    m = metrics
+    with open(path, 'w') as file_desc:
+        json.dump(
+            {
+                'test': {
+                    'loss': m['eval_results'][0],
+                    'accuracy': m['eval_results'][1],
+                    'TP': int(m['conf_matrix'][0][0]),
+                    'FP': int(m['conf_matrix'][0][1]),
+                    'FN': int(m['conf_matrix'][1][0]),
+                    'TN': int(m['conf_matrix'][1][1]),
+                    'precision': m['precision'],
+                    'recall': m['recall'],
+                    'f1_score': m['f1_score'],
+                    'auc': m['roc']['auc_score']
+                }
+            },
+            file_desc
         )
-
-    with open('log/plots.json', 'w') as fd:
-        json.dump([
-            {'activation_hist': [
-                {
-                    'activation': str(a),
-                } for a in y_pred]},
-            {'precision_recall': [
-                {
-                    'precision': str(p),
-                    'recall': str(r),
-                    'threshold': str(t)
-                } for p, r, t in zip(pr, re, pr_thr)]},
-            {'roc': [
-                {
-                    'fpr': str(fp),
-                    'tpr': str(tp),
-                    'threshold': str(th)
-                } for fp, tp, th in zip(fpr, tpr, roc_thr)]}
-            ],
-            fd
-        )
-
-    plot_activation_hist(y_pred, Path('log'))
-    plot_precision_recall(pr, re, pr_thr, Path('log'))
-    plot_roc(fpr, tpr, roc_thr, auc_score, Path('log'))
 
 
 def datagen_to_labels_array(datagen: Dataset) -> np.ndarray:
@@ -110,21 +147,21 @@ def datagen_to_labels_array(datagen: Dataset) -> np.ndarray:
     return np.concatenate(ret)
 
 
-def plot_activation_hist(y_pred: np.ndarray, output_path: Path):
+def plot_activation_hist(y_pred: np.ndarray, output_dir=Path('log')):
     """Plot output activations histogram."""
     fig = px.histogram(y_pred)
-    fig.write_html(str(output_path/'activation_hist.html'))
+    fig.write_html(str(output_dir/'activation_hist.html'))
 
 
 def plot_precision_recall(prec: np.ndarray,
                           rec: np.ndarray,
                           thr: float,
-                          output_dir: Path):
+                          output_dir=Path('log')):
     """Plot and save precision/recall curve in given directory.
 
     :param prec: Precision scores.
     :param rec: Recall scores.
-    :param thre: Thresholds.
+    :param thr: Thresholds.
     """
     fig = px.area(
         x=rec, y=prec, hover_data={'treshold': np.insert(thr, 0, 1)},
@@ -144,7 +181,7 @@ def plot_roc(fpr: np.ndarray,
              tpr: np.ndarray,
              thr: float,
              auc_score: float,
-             output_dir: Path):
+             output_dir=Path('log')):
     """Plot and save roc curve in given directory.
 
     :param fpr: False positives rates.
@@ -193,7 +230,7 @@ def main(params):
     """Run evaluation with given params."""
     model = load_model(params['name'])
     test_ds = load_test_dataset(Path('data/test'))
-    evaluate(test_ds, model, params['test'])
+    evaluate(model, test_ds, params['test'])
 
 
 if __name__ == '__main__':

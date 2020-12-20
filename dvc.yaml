@@ -13,4 +13,13 @@ stages:
       - data/train
       - data/test
     outs:
-      - log/models
+      - data/models
+
+  test:
+    cmd: python3 test.py
+    deps:
+      - data/models
+    metrics:
+      - data/metrics.json
+    plots:
+      - data/plots.json

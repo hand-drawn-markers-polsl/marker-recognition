@@ -1,3 +1,5 @@
 /raw
 /train
 /test
+/metrics.json
+/plots.json

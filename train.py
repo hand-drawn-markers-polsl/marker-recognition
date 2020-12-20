@@ -55,6 +55,9 @@ def prepare_model(model: Model, lr: float):
 def make_callbacks(name: str, cb_params: dict) -> List[callbacks.Callback]:
     """Make training callbacks list.
 
+    Tensorboard driven data is stored in 'log' directory (which is currently
+    not supervised by git/dvc). Model files (tracked by dvc) are stored in
+    'data' directory.
     :param name: Name of given model/experiment. Used for saving logs and
         checkpoints.
     :param callbacks: Dict of callbacks params with keys:
@@ -76,7 +79,7 @@ def make_callbacks(name: str, cb_params: dict) -> List[callbacks.Callback]:
 
     if cb_params['modelcheckpoint']:
         callbacks_list.append(callbacks.ModelCheckpoint(
-            'log/models/model_' + timestamp + '_' + name,
+            'data/models/model_' + timestamp + '_' + name,
             monitor='val_loss',
             save_best_only=True,
             verbose=1
