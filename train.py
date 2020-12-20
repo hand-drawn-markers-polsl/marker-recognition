@@ -2,7 +2,7 @@
 
 import argparse
 from datetime import datetime
-from typing import Dict, List
+from typing import List
 import yaml
 
 from tensorflow.data import Dataset
@@ -102,7 +102,8 @@ def make_params() -> dict:
         nargs='?',
         type=str,
         help='Name of the experiment run, will be used to save models and\
-              logs'
+              logs. Overrides name form params.yaml, may be suitable to make\
+              a run independent of dvc.'
     )
 
     args = parser.parse_args()
