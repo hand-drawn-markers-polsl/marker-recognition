@@ -19,3 +19,6 @@ train:
     earlystopping: true
     stopping_delta: 0.001
     stopping_patience: 5
+
+test:
+  threshold: 0.5
