@@ -1,22 +1,38 @@
+"""Make classification models and some utility functions."""
+
 import glob
 from datetime import datetime
+from pathlib import Path
 
 from tensorflow.keras import layers
 from tensorflow.keras import models
 from tensorflow.keras import regularizers
 
 
-def save_model(model: models.Model, name: str, timestamp=True):
+def save_model(model: models.Model,
+               timestamp=True,
+               save_dir=Path('data/models')):
+    """Save model in given directory under its 'name' property.
+
+    By default adds a timestamp to the name.
+    """
+    save_dir.mkdir(parents=True, exist_ok=True)
     timestamp = datetime.now().strftime("%y-%m-%d_%H_%M_%S")
-    model.save('log/models/model_' + timestamp + '_' + name)
+    model.save(save_dir / ('model_' + timestamp + '_' + model.name))
 
 
-def load_model(name: str) -> models.Model:
-    path = glob.glob('log/models/model*' + name)
-    return models.load_model(path[0])
+def load_model(name: str, load_dir=Path('data/models')) -> models.Model:
+    """Load model with given name form a directory.
+
+    This globs models in given dir for the 'name' string; so the 'name' isn't
+    strictly the name of the file. If multiple models match the 'name' it
+    returns the first alphabetically.
+    """
+    path = load_dir.glob('model*' + name)
+    return models.load_model(sorted(path)[0])
 
 
-def make_regularized_cnn(name, input_shape=(640, 640, 3)) -> models.Model:
+def make_regularized_cnn(name: str, input_shape=(640, 640, 3)) -> models.Model:
     model = models.Sequential(name=name)
     l2_regularizer = regularizers.l2(0.001)
 
