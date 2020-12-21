@@ -12,7 +12,7 @@ import matplotlib.cm as cm
 from make_models import load_model
 
 
-class FilterLayerVisualizer():
+class FilterLayerVisualizer:
     def __init__(self, model, layer_name, output_dir):
         self._img_width, self._img_height = model.input_shape[1:3]
         self._layer_name = layer_name
@@ -128,7 +128,7 @@ class FilterLayerVisualizer():
         return img
 
 
-class IntermediateActivationsVisualizer():
+class IntermediateActivationsVisualizer:
     def __init__(self, model, output_dir):
         i = last_non_dense_layer_index(model)
         self._model_name = model.name

@@ -7,7 +7,7 @@ from skimage.transform import resize
 from skimage.util import img_as_ubyte
 
 
-class ImgPreprocessor():
+class ImgPreprocessor:
     """Preprocessor for training and testing image set.
 
     Raw image set converter into structured data suitable for training and
