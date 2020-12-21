@@ -1,6 +1,5 @@
 """Make classification models and some utility functions."""
 
-import glob
 from datetime import datetime
 from pathlib import Path
 
