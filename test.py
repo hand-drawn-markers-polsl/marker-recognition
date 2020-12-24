@@ -47,7 +47,7 @@ def evaluate(model: Model, test_ds: Dataset, test_params: dict):
     save_metrics(m)
 
 
-def make_eval_preds(model: Model, test_ds: Dataset, threshold=0.5) -> list:
+def make_eval_preds(model: Model, test_ds: Dataset, threshold=0.5) -> tuple:
     """Make evaluation predictions for given model and data.
 
     :param model: Binary classifier model to test.
