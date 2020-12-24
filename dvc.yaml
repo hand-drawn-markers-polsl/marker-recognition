@@ -12,6 +12,13 @@ stages:
     deps:
       - data/train
       - data/test
+    params:
+      - load
+      - train.lr
+      - train.epochs
+      - train.callbacks.earlystopping
+      - train.callbacks.stopping_delta
+      - train.callbacks.stopping_patience
     outs:
       - data/models
 
@@ -19,5 +26,8 @@ stages:
     cmd: python3 test.py
     deps:
       - data/models
+    params:
+      - load.img_size
+      - test
     metrics:
       - data/metrics.json

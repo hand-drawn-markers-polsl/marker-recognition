@@ -1,7 +1,6 @@
 name: simple_regularized_cnn
 
 load:
-  img_directory: data/train
   img_size: 640
   batch_size: 32
   validation_split: 0.8

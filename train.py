@@ -1,8 +1,9 @@
 """Train classification models."""
 
-import argparse
 from datetime import datetime
+from pathlib import Path
 from typing import List
+import argparse
 import yaml
 
 from tensorflow.data import Dataset
@@ -123,7 +124,7 @@ def main(params):
     """Run training with given params."""
     load_params = params['load']
     train_ds, val_ds = load_train_dataset(
-        directory=load_params['img_directory'],
+        directory=Path('data/train'),
         batch_size=load_params['batch_size'],
         img_size=load_params['img_size'],
         validation_split=load_params['validation_split'],
