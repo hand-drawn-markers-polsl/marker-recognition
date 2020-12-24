@@ -42,7 +42,7 @@ class ImgPreprocessor:
         self._prepare_sub_dirs(output_dir)
         class_flag = False
         for i, img_path in enumerate(sorted(self._root_dir.glob(input_glob))):
-            print(f'Iteration {i} of image set preparation.')
+            print(f'Preparing data; iteration: {i}, processing: {img_path}.')
             img_name = img_path.name
             img = io.imread(img_path, pilmode='RGB')
             img = img_as_ubyte(resize(img, self._img_size, anti_aliasing=True))
