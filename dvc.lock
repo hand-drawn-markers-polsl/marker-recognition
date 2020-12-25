@@ -3,8 +3,14 @@ prepare:
   deps:
   - path: data/raw
     md5: 5c5606a9193845c3b620c25c08eeee6d.dir
-    size: 7058236547
+    size: 7058275475
     nfiles: 2930
+  - path: src/convert_imgs.sh
+    md5: 16125eb4d505fcf0c623523b090950c0
+    size: 280
+  - path: src/prepare.py
+    md5: 61cd8c29b6f622212c5cbeab1b5c6504
+    size: 2743
   outs:
   - path: data/test
     md5: 8fac2ca3f308120b4a120dc7d5f14681.dir
@@ -25,6 +31,9 @@ train:
     md5: 59230a6be0245a60c7d6180bf651b8b5.dir
     size: 137726805
     nfiles: 2880
+  - path: src/train.py
+    md5: d63188b61ddde4ac9feb50c0a7bf5173
+    size: 4319
   params:
     params.yaml:
       load:
@@ -50,6 +59,9 @@ test:
     md5: bd2e4ea58c4ad5c16b9ac19377fd74af.dir
     size: 759254428
     nfiles: 3
+  - path: src/test.py
+    md5: 7066547ee487a697d5bae0124710d002
+    size: 7763
   params:
     params.yaml:
       load.img_size: 640
