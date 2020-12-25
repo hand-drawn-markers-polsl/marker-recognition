@@ -60,8 +60,8 @@ test:
     size: 759254428
     nfiles: 3
   - path: src/test.py
-    md5: 7066547ee487a697d5bae0124710d002
-    size: 7763
+    md5: 8d1edabeed0106c4b86e7943f6da7311
+    size: 7963
   params:
     params.yaml:
       load.img_size: 640

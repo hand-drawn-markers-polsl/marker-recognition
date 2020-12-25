@@ -110,6 +110,7 @@ def save_metrics(metrics: dict, path=Path('data/metrics.json')):
     of this function.
     """
     m = metrics
+    path.parent.mkdir(parents=True, exist_ok=True)
     with open(path, 'w') as file_desc:
         json.dump(
             {
@@ -150,7 +151,7 @@ def datagen_to_labels_array(datagen: Dataset) -> np.ndarray:
 def plot_activation_hist(y_pred: np.ndarray, output_dir=Path('log')):
     """Plot output activations histogram."""
     fig = px.histogram(y_pred)
-
+    output_dir.mkdir(parents=True, exist_ok=True)
     output_file = str(output_dir/'activation_hist.html')
     fig.write_html(output_file)
     print(f'Saved activations histogram to {output_file}.')
@@ -178,6 +179,7 @@ def plot_precision_recall(prec: np.ndarray,
     fig.update_yaxes(scaleanchor='x', scaleratio=1)
     fig.update_xaxes(constrain='domain')
 
+    output_dir.mkdir(parents=True, exist_ok=True)
     output_file = str(output_dir/'prec_recall.html')
     fig.write_html(output_file)
     print(f'Saved precision/recall curve to {output_file}.')
@@ -208,6 +210,7 @@ def plot_roc(fpr: np.ndarray,
     fig.update_yaxes(scaleanchor='x', scaleratio=1)
     fig.update_xaxes(constrain='domain')
 
+    output_dir.mkdir(parents=True, exist_ok=True)
     output_file = str(output_dir/'roc.html')
     fig.write_html(output_file)
     print(f'Saved roc curve in {output_file}.')
