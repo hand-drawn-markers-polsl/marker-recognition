@@ -150,7 +150,10 @@ def datagen_to_labels_array(datagen: Dataset) -> np.ndarray:
 def plot_activation_hist(y_pred: np.ndarray, output_dir=Path('log')):
     """Plot output activations histogram."""
     fig = px.histogram(y_pred)
-    fig.write_html(str(output_dir/'activation_hist.html'))
+
+    output_file = str(output_dir/'activation_hist.html')
+    fig.write_html(output_file)
+    print(f'Saved activations histogram to {output_file}.')
 
 
 def plot_precision_recall(prec: np.ndarray,
@@ -174,7 +177,10 @@ def plot_precision_recall(prec: np.ndarray,
     )
     fig.update_yaxes(scaleanchor='x', scaleratio=1)
     fig.update_xaxes(constrain='domain')
-    fig.write_html(str(output_dir/'prec_recall.html'))
+
+    output_file = str(output_dir/'prec_recall.html')
+    fig.write_html(output_file)
+    print(f'Saved precision/recall curve to {output_file}.')
 
 
 def plot_roc(fpr: np.ndarray,
@@ -201,7 +207,10 @@ def plot_roc(fpr: np.ndarray,
 
     fig.update_yaxes(scaleanchor='x', scaleratio=1)
     fig.update_xaxes(constrain='domain')
-    fig.write_html(str(output_dir/'roc.html'))
+
+    output_file = str(output_dir/'roc.html')
+    fig.write_html(output_file)
+    print(f'Saved roc curve in {output_file}.')
 
 
 def make_params() -> dict:

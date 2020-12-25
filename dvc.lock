@@ -1,46 +1,61 @@
 prepare:
-  cmd: ./convert_imgs.sh && python3 prepare.py
+  cmd: ./src/convert_imgs.sh && python3 src/prepare.py
   deps:
   - path: data/raw
-    md5: 59e39f5e68f506f62dd2f636e52567e2.dir
-    size: 7058178233
-    nfiles: 2934
+    md5: 5c5606a9193845c3b620c25c08eeee6d.dir
+    size: 7058236547
+    nfiles: 2930
   outs:
   - path: data/test
     md5: 8fac2ca3f308120b4a120dc7d5f14681.dir
     size: 2530214
     nfiles: 50
   - path: data/train
-    md5: b97182df8b37a118aacad09f1e8bb196.dir
-    size: 137726250
+    md5: 59230a6be0245a60c7d6180bf651b8b5.dir
+    size: 137726805
     nfiles: 2880
 train:
-  cmd: python3 train.py
+  cmd: python3 src/train.py
   deps:
   - path: data/test
     md5: 8fac2ca3f308120b4a120dc7d5f14681.dir
     size: 2530214
     nfiles: 50
   - path: data/train
-    md5: b97182df8b37a118aacad09f1e8bb196.dir
-    size: 137726250
+    md5: 59230a6be0245a60c7d6180bf651b8b5.dir
+    size: 137726805
     nfiles: 2880
+  params:
+    params.yaml:
+      load:
+        img_size: 640
+        batch_size: 32
+        validation_split: 0.8
+        augmentations:
+          zoom_range: 0.0
+      train.callbacks.earlystopping: true
+      train.callbacks.stopping_delta: 0.001
+      train.callbacks.stopping_patience: 5
+      train.epochs: 1
+      train.lr: 2e-05
   outs:
-  - path: log/models
-    md5: 90d416f72fd4b13acaa605de8c779f17.dir
+  - path: data/models
+    md5: bd2e4ea58c4ad5c16b9ac19377fd74af.dir
     size: 759254428
     nfiles: 3
 test:
-  cmd: python3 test.py
+  cmd: python3 src/test.py
   deps:
-  - path: log/models
-    md5: 77600068af5b4674170192de40cdde97.dir
-    size: 2277760116
-    nfiles: 9
+  - path: data/models
+    md5: bd2e4ea58c4ad5c16b9ac19377fd74af.dir
+    size: 759254428
+    nfiles: 3
+  params:
+    params.yaml:
+      load.img_size: 640
+      test:
+        threshold: 0.5
   outs:
   - path: data/metrics.json
-    md5: 8a05224cbdc33c58f00dd452b6d96781
-    size: 191
-  - path: data/plots.json
-    md5: dc8779105883fb26a4e2700cdd49448b
-    size: 7104
+    md5: 12bcaa30bcc5e69b77fe2be99b666237
+    size: 190
