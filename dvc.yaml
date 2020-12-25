@@ -2,6 +2,8 @@ stages:
   prepare:
     cmd: ./src/convert_imgs.sh && python3 src/prepare.py
     deps:
+      - src/convert_imgs.sh
+      - src/prepare.py
       - data/raw
     outs:
       - data/train
@@ -10,6 +12,7 @@ stages:
   train:
     cmd: python3 src/train.py
     deps:
+      - src/train.py
       - data/train
       - data/test
     params:
@@ -25,6 +28,7 @@ stages:
   test:
     cmd: python3 src/test.py
     deps:
+      - src/test.py
       - data/models
     params:
       - load.img_size
