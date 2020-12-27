@@ -311,13 +311,13 @@ def main():
     img = np.expand_dims(img, axis=0)
     img /= 255.
 
-    model = load_model('dupa')
+    model = load_model('simple_regularized_cnn')
     model.summary()
     print()
 
     plot_heatmaps(path, (640, 640), model, "log/images/")
-    IntermediateActivationsVisualizer(model, 'log/images/').visualize(img)
     FilterLayerVisualizer(model, 'conv2d_3', 'log/images/').visualize()
+    IntermediateActivationsVisualizer(model, 'log/images/').visualize(img)
 
 
 if __name__ == '__main__':
