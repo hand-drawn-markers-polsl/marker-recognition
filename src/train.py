@@ -24,9 +24,9 @@ def train(train_ds: Dataset,
     :param val_ds: Validation dataset.
     :param model: Binary classifier model to train.
     :param train_params: Dict with training params. Must include keys:
-        lr: Learning rate of type float.
-        epochs: Number of training epochs of type int.
-        callbacks: Dict of callbacks params. See `make_callbacks` function
+        'lr': Learning rate of type float.
+        'epochs': Number of training epochs of type int.
+        'callbacks': Dict of callbacks params. See `make_callbacks` function
             docstring to examine required keys.
     """
     prepare_model(model, train_params['lr'])
@@ -62,11 +62,11 @@ def make_callbacks(name: str, cb_params: dict) -> List[callbacks.Callback]:
     :param name: Name of given model/experiment. Used for saving logs and
         checkpoints.
     :param callbacks: Dict of callbacks params with keys:
-        tensorboard: Switch to enable tensorboard of type bool.
-        modelcheckpoint: Switch to enable model saving of type bool.
-        earlystopping: Switch to enable early stopping of type bool.
-        stopping_delta: Minimal delta to prevent stoppping of type float.
-        stopping_patience: Number of epochs without improvement after
+        'tensorboard': Switch to enable tensorboard of type bool.
+        'modelcheckpoint': Switch to enable model saving of type bool.
+        'earlystopping': Switch to enable early stopping of type bool.
+        'stopping_delta': Minimal delta to prevent stoppping of type float.
+        'stopping_patience': Number of epochs without improvement after
             which training stops. Of type int.
     :return: List of enabled callbacks.
     """

@@ -2,7 +2,7 @@
 
 from functools import partial
 from pathlib import Path
-from typing import Dict, Tuple
+from typing import Tuple
 
 import tensorflow as tf
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
@@ -13,7 +13,7 @@ def load_train_dataset(directory: Path,
                        img_size=640,
                        validation_split=0.8,
                        seed=42,
-                       augmentations: Dict = None
+                       augmentations: dict = None
                        ) -> Tuple[tf.data.Dataset, tf.data.Dataset]:
     """Load training data from directory.
 

@@ -1,6 +1,7 @@
 """Test/evaluate classification models."""
 
 from pathlib import Path
+from typing import Any, Dict
 import argparse
 import json
 import yaml
@@ -23,7 +24,7 @@ def evaluate(model: Model, test_ds: Dataset, test_params: dict):
     :param test_ds: Test dataset.
     :param model: Binary classifier model to test.
     :param test_params: Dict with test params. Must include keys:
-        threshold: Binary classification threshold of type float.
+        'threshold': Binary classification threshold of type float.
     """
     y_true, y_pred, y_pred_classes = make_eval_preds(
         model,
@@ -54,7 +55,7 @@ def make_eval_preds(model: Model, test_ds: Dataset, threshold=0.5) -> tuple:
     :param test_ds: Test dataset.
     :param threshold: Binary classification threshold used for class
         predictions.
-    :return: List containing labels: [y_true, y_pred, y_pred_classes].
+    :return: Tuple containing labels: (y_true, y_pred, y_pred_classes).
     """
     y_pred = model.predict(test_ds)
     y_true = datagen_to_labels_array(test_ds)
@@ -68,7 +69,7 @@ def make_eval_preds(model: Model, test_ds: Dataset, threshold=0.5) -> tuple:
 
 def make_metrics(y_true: np.ndarray,
                  y_pred: np.ndarray,
-                 y_pred_classes: np.ndarray) -> dict:
+                 y_pred_classes: np.ndarray) -> Dict[str, Any]:
     """Make evaluation metrics, based on predictions.
 
     :param y_true: Ground truth labels.
@@ -79,7 +80,7 @@ def make_metrics(y_true: np.ndarray,
     :return: Dict with metrics. There are many of them, it is best to examine
         their keys in the body of this function.
     """
-    metrics = {}
+    metrics: Dict[str, Any] = {}
     m = metrics
     m['class_report'] = classification_report(y_true, y_pred_classes)
     m['conf_matrix'] = confusion_matrix(y_true, y_pred_classes)

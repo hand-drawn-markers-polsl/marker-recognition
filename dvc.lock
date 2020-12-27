@@ -32,8 +32,8 @@ train:
     size: 137726805
     nfiles: 2880
   - path: src/train.py
-    md5: d63188b61ddde4ac9feb50c0a7bf5173
-    size: 4319
+    md5: b98b218fe40073f2c9b2c01fc4a0cc5f
+    size: 4335
   params:
     params.yaml:
       load:
@@ -60,8 +60,8 @@ test:
     size: 759254428
     nfiles: 3
   - path: src/test.py
-    md5: 8d1edabeed0106c4b86e7943f6da7311
-    size: 7963
+    md5: 03230223f447011ad47e7efd2b987d55
+    size: 8021
   params:
     params.yaml:
       load.img_size: 640

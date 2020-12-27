@@ -32,6 +32,7 @@ def load_model(name: str, load_dir=Path('data/models')) -> models.Model:
 
 
 def make_regularized_cnn(name: str, input_shape=(640, 640, 3)) -> models.Model:
+    """Build simple regularized cnn binary classifier."""
     model = models.Sequential(name=name)
     l2_regularizer = regularizers.l2(0.001)
 
