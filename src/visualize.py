@@ -315,7 +315,7 @@ def main():
     model.summary()
     print()
 
-    plot_heatmaps(path, (640, 640), model, "log/images/")
+    plot_heatmaps(path, (256, 256), model, "log/images/")
     FilterLayerVisualizer(model, 'conv2d_3', 'log/images/').visualize()
     IntermediateActivationsVisualizer(model, 'log/images/').visualize(img)
 

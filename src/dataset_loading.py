@@ -10,7 +10,7 @@ from tensorflow.keras.preprocessing.image import ImageDataGenerator
 
 def load_train_dataset(directory: Path,
                        batch_size=32,
-                       img_size=640,
+                       img_size=256,
                        validation_split=0.8,
                        seed=42,
                        augmentations: dict = None
@@ -38,7 +38,6 @@ def load_train_dataset(directory: Path,
         validation_split=validation_split,
         **augmentations
     )
-
     load_subset = partial(
         datagen.flow_from_directory,
         directory=directory,
@@ -55,7 +54,7 @@ def load_train_dataset(directory: Path,
 
 def load_test_dataset(directory: Path,
                       batch_size=32,
-                      img_size=640) -> tf.data.Dataset:
+                      img_size=256) -> tf.data.Dataset:
     """Load test data from directory.
 
     Load data for evaluation in form of data generators.

@@ -63,7 +63,7 @@ class ImgPreprocessor:
 
 def main():
     """Prepare all images for training and testing a classifier."""
-    img_prep = ImgPreprocessor(640, Path('data/raw'))
+    img_prep = ImgPreprocessor(256, Path('data/raw'))
     print(img_prep)
     img_prep.prepare_imgs('*train*/**/*.jpg', Path('data/train'), 10)
     img_prep.prepare_imgs('*test*/**/*.jpg', Path('data/test'), 25)

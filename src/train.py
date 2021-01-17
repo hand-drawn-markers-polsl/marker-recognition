@@ -47,7 +47,7 @@ def prepare_model(model: Model, lr: float):
     :param lr: Training learning rate.
     """
     model.compile(
-        optimizer=optimizers.RMSprop(lr),
+        optimizer=optimizers.Adam(lr),
         loss="binary_crossentropy",
         metrics=["accuracy"],
     )

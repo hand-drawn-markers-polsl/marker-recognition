@@ -6,6 +6,7 @@ from pathlib import Path
 from tensorflow.keras import layers
 from tensorflow.keras import models
 from tensorflow.keras import regularizers
+from tensorflow.keras.applications import VGG16
 
 
 def save_model(model: models.Model,
@@ -31,32 +32,44 @@ def load_model(name: str, load_dir=Path('data/models')) -> models.Model:
     return models.load_model(sorted(path)[0])
 
 
-def make_regularized_cnn(name: str, input_shape=(640, 640, 3)) -> models.Model:
+def make_regularized_cnn(name: str, input_shape=(256, 256, 3)) -> models.Model:
     """Build simple regularized cnn binary classifier."""
-    model = models.Sequential(name=name)
     l2_regularizer = regularizers.l2(0.001)
+    # model = models.Sequential(name=name)
+    #
+    # model.add(layers.Conv2D(32, (3, 3), kernel_regularizer=l2_regularizer,
+    #                         activation='elu', input_shape=input_shape))
+    # model.add(layers.MaxPool2D())
+    #
+    # model.add(layers.Conv2D(64, (3, 3), kernel_regularizer=l2_regularizer,
+    #                         activation='elu'))
+    # model.add(layers.MaxPool2D((2, 2)))
+    #
+    # model.add(layers.Conv2D(128, (3, 3), kernel_regularizer=l2_regularizer,
+    #                         activation='elu'))
+    # model.add(layers.MaxPool2D((2, 2)))
+    #
+    # model.add(layers.Conv2D(128, (3, 3), kernel_regularizer=l2_regularizer,
+    #                         activation='elu'))
+    # model.add(layers.MaxPool2D((2, 2)))
+    #
+    # model.add(layers.Flatten())
+    # model.add(layers.Dense(512, kernel_regularizer=l2_regularizer,
+    #                        activation='selu'))
+    #
+    # model.add(layers.Dropout(0.5))
+    # model.add(layers.Dense(1, activation='sigmoid'))
 
-    model.add(layers.Conv2D(32, (3, 3), kernel_regularizer=l2_regularizer,
-                            activation='relu', input_shape=input_shape))
-    model.add(layers.MaxPool2D())
+    base_model = VGG16(include_top=False, input_shape=input_shape)
+    base_model.trainable = False
 
-    model.add(layers.Conv2D(64, (3, 3), kernel_regularizer=l2_regularizer,
-                            activation='relu'))
-    model.add(layers.MaxPool2D((2, 2)))
+    x = layers.Dropout(0.5)(base_model.layers[-1].output)
+    x = layers.Flatten()(x)
+    x = layers.Dropout(0.7)(x)
+    x = layers.Dense(512, kernel_regularizer=l2_regularizer, activation='relu')(x)
+    x = layers.Dropout(0.8)(x)
+    output = layers.Dense(1, activation='sigmoid')(x)
 
-    model.add(layers.Conv2D(128, (3, 3), kernel_regularizer=l2_regularizer,
-                            activation='relu'))
-    model.add(layers.MaxPool2D((2, 2)))
-
-    model.add(layers.Conv2D(128, (3, 3), kernel_regularizer=l2_regularizer,
-                            activation='relu'))
-    model.add(layers.MaxPool2D((2, 2)))
-
-    model.add(layers.Flatten())
-    model.add(layers.Dense(512, kernel_regularizer=l2_regularizer,
-                           activation='relu'))
-
-    model.add(layers.Dropout(0.5))
-    model.add(layers.Dense(1, activation='sigmoid'))
-
+    model = models.Model(inputs=base_model.layers[0].input, outputs=output)
+    model.summary()
     return model

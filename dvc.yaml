@@ -1,6 +1,6 @@
 stages:
   prepare:
-    cmd: ./src/convert_imgs.sh && python3 src/prepare.py
+    cmd: bash ./src/convert_imgs.sh && python src/prepare.py
     deps:
       - src/convert_imgs.sh
       - src/prepare.py
@@ -10,7 +10,7 @@ stages:
       - data/test
 
   train:
-    cmd: python3 src/train.py
+    cmd: python src/train.py
     deps:
       - src/train.py
       - data/train
@@ -26,7 +26,7 @@ stages:
       - data/models
 
   test:
-    cmd: python3 src/test.py
+    cmd: python src/test.py
     deps:
       - src/test.py
       - data/models
