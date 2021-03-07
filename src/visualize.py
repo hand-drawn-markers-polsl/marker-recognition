@@ -190,6 +190,7 @@ class IntermediateActivationsVisualizer:
 def get_img_array(img_path, size):
     img = load_img(img_path, target_size=size)
     array = img_to_array(img)
+    array = array / 255
     return np.expand_dims(array, axis=0)
 
 
@@ -235,6 +236,7 @@ def make_gradcam_heatmap(img_array, model, last_conv_layer_name,
     # This is the gradient of the top predicted class with regard to
     # the output feature map of the last conv layer
     grads = tape.gradient(top_class_channel, last_conv_layer_output)
+    print(tf.cumsum(grads))
 
     # This is a vector where each entry is the mean intensity of the gradient
     # over a specific feature map channel
@@ -249,16 +251,21 @@ def make_gradcam_heatmap(img_array, model, last_conv_layer_name,
 
     # The channel-wise mean of the resulting feature map
     # is our heatmap of class activation
+    print(last_conv_layer_output.sum())
     heatmap = np.mean(last_conv_layer_output, axis=-1)
+
+    print(heatmap.sum())
 
     # For visualization purpose, we will normalize the heatmap between 0 & 1
     heatmap = np.maximum(heatmap, 0) / (np.max(heatmap) + 1e-5)
-    return heatmap
+    return heatmap * 255
 
 
 def plot_heatmaps(img_path, img_size, model, save_path):
     img_array = get_img_array(img_path, size=img_size)
     last_conv_layer_name, classifier_layer_names = get_last_layer_names(model)
+    print(last_conv_layer_name)
+    print(classifier_layer_names)
     heatmap = make_gradcam_heatmap(
         img_array, model, last_conv_layer_name, classifier_layer_names
     )
@@ -299,9 +306,9 @@ def last_non_dense_layer_index(model):
 
 
 def main():
-    path = '../images/train/true/IMG_20201101_133135.jpg'
+    path = './data/test/true/IMG_7773.jpg'
     img = keras.preprocessing.image.load_img(
-        '../images/train/true/IMG_20201101_133135.jpg'
+        path
     )
     """
     TODO: Below part which loads single img should be unified and
@@ -315,9 +322,9 @@ def main():
     model.summary()
     print()
 
-    plot_heatmaps(path, (640, 640), model, "log/images/")
-    FilterLayerVisualizer(model, 'conv2d_3', 'log/images/').visualize()
-    IntermediateActivationsVisualizer(model, 'log/images/').visualize(img)
+    plot_heatmaps(path, (256, 256), model, "log/images/")
+    # FilterLayerVisualizer(model, 'conv2d_2', 'log/images/').visualize()
+    # IntermediateActivationsVisualizer(model, 'log/images/intermediate/').visualize(img)
 
 
 if __name__ == '__main__':
