@@ -38,9 +38,9 @@ class FilterLayerVisualizer:
         self._output_dir = output_dir
 
     def visualize(self, filter_num=8):
-        """Perform the visualiztion and save results.
+        """Perform the visualization and save results.
 
-        :param filter_num: Number of filters to be viusalized. May be useful
+        :param filter_num: Number of filters to be visualized. May be useful
             to limit this value if processing a very large layer.
         """
         all_imgs = []
@@ -49,7 +49,7 @@ class FilterLayerVisualizer:
             print(f'{filter_index}', end=', ', flush=True)
             img = self.visualize_filter(filter_index)
             all_imgs.append(img)
-        print('\nFinished computing max activatons for filters.\n')
+        print('\nFinished computing max activations for filters.\n')
 
         filters_grid = self._make_filters_grid(all_imgs, filter_num=filter_num)
         self._save_vis(filters_grid)
@@ -59,7 +59,7 @@ class FilterLayerVisualizer:
         """Visualize conv filter of given index."""
         filter_img = self._initialize_filter_img()
         for _ in range(iterations):
-            loss, filter_img = self._gradient_ascent_step(
+            filter_img = self._gradient_ascent_step(
                 filter_img, filter_index, learning_rate
             )
 
@@ -88,7 +88,7 @@ class FilterLayerVisualizer:
         :param grid_margin: Pixel width of margin between images in the grid.
         :param filter_margin: Width of margin which should be used to crop
             images inside the grid (useful to get rid of border artifacts).
-        :return: Grid image with filter viusalizations.
+        :return: Grid image with filter visualizations.
         """
         rows = ceil(filter_num/cols)
 
@@ -115,11 +115,8 @@ class FilterLayerVisualizer:
         return filters_grid
 
     @tf.function
-    def _gradient_ascent_step(self,
-                              img: np.ndarray,
-                              filter_index: int,
-                              learning_rate: float,
-                              ) -> Tuple[tf.Tensor, np.ndarray]:
+    def _gradient_ascent_step(self, img: np.ndarray, filter_index: int,
+                              learning_rate: float,) -> np.ndarray:
         """Perform gradient step on particular filter for given image."""
         with tf.GradientTape() as tape:
             tape.watch(img)
@@ -128,15 +125,15 @@ class FilterLayerVisualizer:
         grads = tape.gradient(loss, img)
         grads = tf.math.l2_normalize(grads)
         img += learning_rate * grads
-        return loss, img
+        return img
 
     def _compute_loss(self, input_image: np.ndarray, filter_index: int,
                       margin=2) -> tf.Tensor:
         """Compute loss for feature extractor prediction."""
         activation = self._feature_extractor(input_image)
         # Omit borders on loss calculation, to avoid edge artifacts influence
-        m = margin
-        filter_activation = activation[:, m:-m, m:-m, filter_index]
+        mrg = margin
+        filter_activation = activation[:, mrg:-mrg, mrg:-mrg, filter_index]
         return tf.reduce_mean(filter_activation)
 
     def _save_vis(self, filters_grid) -> np.ndarray:
@@ -154,12 +151,12 @@ class FilterLayerVisualizer:
         """Prepare np array image which will contain visualizations grid.
 
         :param img_width: Width of a single image containing one filter
-            viusalization.
+            visualization.
         :param img_heght: Like above.
         :param rows: Number of rows in the grid.
-        :param cols: Number of colums in the grid.
+        :param cols: Number of columns in the grid.
         :param margin: Grid margin between filter visualization images.
-        :return: Image with size suitable to fit given grid, initally filled
+        :return: Image with size suitable to fit given grid, initially filled
             with zeros.
         """
         width = cols * img_width + (cols - 1) * margin
@@ -335,7 +332,7 @@ class ActivationsHeatmapVisualizer:
         overlayed_img.save(self._output_dir / fname)
 
     def make_gradcam_heatmap(self, img_array: np.ndarray) -> np.ndarray:
-        """Calculate gradcam heatmap for given image."""
+        """Calculate GradCAM heatmap for given image."""
         # Calculate top predicted class gradient in regard to the output
         # feature map of the last conv layer
         with tf.GradientTape() as tape:
@@ -353,9 +350,8 @@ class ActivationsHeatmapVisualizer:
         last_conv_layer_output = last_conv_layer_output.numpy()[0]
         pooled_grads = pooled_grads.numpy()
 
-        # We multiply each channel in the feature map array
-        # by "how important this channel is" with regard to the top predicted
-        # class
+        # We multiply each channel in the feature map array by "how important
+        # this channel is" with regard to the top predicted class
         for i in range(pooled_grads.shape[-1]):
             last_conv_layer_output[:, :, i] *= pooled_grads[i]
 
@@ -368,7 +364,7 @@ class ActivationsHeatmapVisualizer:
 
     @staticmethod
     def _get_splitted_model_names(model: keras.Model) -> Tuple[str, List[str]]:
-        """plit given model in two parts: conv base and classifier.
+        """Split given model in two parts: conv base and classifier.
 
         Returns name of last convolutional layer and tuple with all classifier
         layers names.

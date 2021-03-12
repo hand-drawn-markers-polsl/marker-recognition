@@ -7,8 +7,7 @@ import argparse
 import yaml
 
 from tensorflow.data import Dataset
-from tensorflow.keras import callbacks, optimizers
-from tensorflow.keras.models import Model
+from tensorflow.keras import Model, callbacks, optimizers
 
 from dataset_loading import load_train_dataset
 from make_models import make_regularized_cnn
@@ -97,7 +96,7 @@ def make_callbacks(name: str, cb_params: dict) -> List[callbacks.Callback]:
     return callbacks_list
 
 
-def make_params() -> dict:
+def _make_params() -> dict:
     """Make training parameters dict."""
     parser = argparse.ArgumentParser()
     parser.add_argument(
@@ -129,10 +128,11 @@ def main(params):
         img_size=load_params['img_size'],
         validation_split=load_params['validation_split'],
     )
-    model = make_regularized_cnn(params['name'])
+    img_shape = (load_params['img_size'], load_params['img_size'], 3)
+    model = make_regularized_cnn(params['name'], input_shape=img_shape)
     train(train_ds, val_ds, model, params['train'])
 
 
 if __name__ == '__main__':
-    PARAMS = make_params()
+    PARAMS = _make_params()
     main(PARAMS)

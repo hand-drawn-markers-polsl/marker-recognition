@@ -1,6 +1,6 @@
 stages:
   prepare:
-    cmd: ./src/convert_imgs.sh && python3 src/prepare.py
+    cmd: sh src/convert_imgs.sh && python3 src/prepare.py
     deps:
       - src/convert_imgs.sh
       - src/prepare.py

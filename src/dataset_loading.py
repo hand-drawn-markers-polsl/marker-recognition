@@ -30,6 +30,7 @@ def load_train_dataset(directory: Path,
         passed to init of 'ImageDataGenerator', refer to its documentation
         to examine list of available options.
     :return: List with two elements: training and validation data generators.
+        Images are in range from 0 to 1.
     """
     if augmentations is None:
         augmentations = {}
@@ -60,17 +61,20 @@ def load_test_dataset(directory: Path,
 
     Load data for evaluation in form of data generators.
     This loader infers binary labels from 'true' and 'false' directories with
-    data.
+    data. Images are loaded in a fixed order, shuffling on test data is
+    disabled.
 
     :param directory: Path to training image set root.
     :parm batch_size: Size of batch generated during iteration.
-    :return: Test data generator.
+    :return: Test data generator. Images are in range from 0 to 1.
     """
     datagen = ImageDataGenerator(rescale=1./255)
     test_ds = datagen.flow_from_directory(
         directory=directory,
         target_size=(img_size, img_size),
-        batch_size=batch_size
+        batch_size=batch_size,
+        class_mode='binary',
+        shuffle=False
     )
     return test_ds
 

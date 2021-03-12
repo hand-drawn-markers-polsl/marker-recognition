@@ -3,9 +3,7 @@
 from datetime import datetime
 from pathlib import Path
 
-from tensorflow.keras import layers
-from tensorflow.keras import models
-from tensorflow.keras import regularizers
+from tensorflow.keras import applications, layers, models, regularizers
 
 
 def save_model(model: models.Model,
@@ -37,26 +35,42 @@ def make_regularized_cnn(name: str, input_shape=(640, 640, 3)) -> models.Model:
     l2_regularizer = regularizers.l2(0.001)
 
     model.add(layers.Conv2D(32, (3, 3), kernel_regularizer=l2_regularizer,
-                            activation='relu', input_shape=input_shape))
+                            activation=layers.LeakyReLU(),
+                            input_shape=input_shape))
     model.add(layers.MaxPool2D())
 
     model.add(layers.Conv2D(64, (3, 3), kernel_regularizer=l2_regularizer,
-                            activation='relu'))
+                            activation=layers.LeakyReLU()))
+    model.add(layers.BatchNormalization())
     model.add(layers.MaxPool2D((2, 2)))
 
     model.add(layers.Conv2D(128, (3, 3), kernel_regularizer=l2_regularizer,
-                            activation='relu'))
-    model.add(layers.MaxPool2D((2, 2)))
-
-    model.add(layers.Conv2D(128, (3, 3), kernel_regularizer=l2_regularizer,
-                            activation='relu'))
+                            activation=layers.LeakyReLU()))
     model.add(layers.MaxPool2D((2, 2)))
 
     model.add(layers.Flatten())
     model.add(layers.Dense(512, kernel_regularizer=l2_regularizer,
-                           activation='relu'))
+                           activation=layers.LeakyReLU()))
 
     model.add(layers.Dropout(0.5))
     model.add(layers.Dense(1, activation='sigmoid'))
+
+    return model
+
+
+def make_vgg16_based_cnn(name: str, input_shape=(640, 640, 3)) -> models.Model:
+    """Build cnn binary classifier on top of VGG16 convolutional base."""
+    base_model = applications.VGG16(include_top=False, input_shape=input_shape)
+    base_model.trainable = False
+
+    x = layers.Dropout(0.5)(base_model.layers[-1].output)
+    x = layers.Flatten()(x)
+    x = layers.Dropout(0.7)(x)
+    x = layers.Dense(512, kernel_regularizer=layers.l2_regularizer,
+                     activation='relu')(x)
+    x = layers.Dropout(0.8)(x)
+    output = layers.Dense(1, activation='sigmoid')(x)
+
+    model = models.Model(inputs=base_model.layers[0].input, outputs=output)
 
     return model

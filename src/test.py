@@ -60,9 +60,9 @@ def make_eval_preds(model: Model, test_ds: Dataset, threshold=0.5) -> tuple:
     y_pred = model.predict(test_ds)
     y_true = datagen_to_labels_array(test_ds)
 
-    y_pred = y_pred.ravel()
-    y_pred_classes = y_pred > threshold
-    y_true = y_true.ravel()
+    y_pred = y_pred.flatten()
+    y_pred_classes = (y_pred > threshold).astype(float)
+    y_true = y_true.flatten()
 
     return y_true, y_pred, y_pred_classes
 
@@ -140,11 +140,10 @@ def datagen_to_labels_array(datagen: Dataset) -> np.ndarray:
     :return: Array of y values (labels) from generator.
     """
     labels_idx = 1
-    true_class_idx = 1
     ret = []
     # Keras internals force usage of range(len()) here
     for batch_iter in range(len(datagen)):
-        ret.append(datagen[batch_iter][labels_idx].transpose()[true_class_idx])
+        ret.append(datagen[batch_iter][labels_idx])
 
     return np.concatenate(ret)
 
@@ -217,7 +216,7 @@ def plot_roc(fpr: np.ndarray,
     print(f'Saved roc curve in {output_file}.')
 
 
-def make_params() -> dict:
+def _make_params() -> dict:
     """Make training parameters dict."""
     parser = argparse.ArgumentParser()
     parser.add_argument(
@@ -242,10 +241,11 @@ def make_params() -> dict:
 def main(params):
     """Run evaluation with given params."""
     model = load_model(params['name'])
-    test_ds = load_test_dataset(Path('data/test'))
+    img_size = params['load']['img_size']
+    test_ds = load_test_dataset(Path('data/test'), img_size=img_size)
     evaluate(model, test_ds, params['test'])
 
 
 if __name__ == '__main__':
-    PARAMS = make_params()
+    PARAMS = _make_params()
     main(PARAMS)
