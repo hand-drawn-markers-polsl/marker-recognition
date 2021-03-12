@@ -1,0 +1,37 @@
+stages:
+  prepare:
+    cmd: sh src/convert_imgs.sh && python3 src/prepare.py
+    deps:
+      - src/convert_imgs.sh
+      - src/prepare.py
+      - data/raw
+    outs:
+      - data/train
+      - data/test
+
+  train:
+    cmd: python3 src/train.py
+    deps:
+      - src/train.py
+      - data/train
+      - data/test
+    params:
+      - load
+      - train.lr
+      - train.epochs
+      - train.callbacks.earlystopping
+      - train.callbacks.stopping_delta
+      - train.callbacks.stopping_patience
+    outs:
+      - data/models
+
+  test:
+    cmd: python3 src/test.py
+    deps:
+      - src/test.py
+      - data/models
+    params:
+      - load.img_size
+      - test
+    metrics:
+      - data/metrics.json
